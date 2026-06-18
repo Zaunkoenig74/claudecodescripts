@@ -608,41 +608,34 @@ setTimeout(function() {
         },
     });
 
-    // Slide-Übergang: Phase 1 Exit vollständig → Snap → Phase 2 Enter
+    // Slide-Übergang: neuer Slide fährt herein, aktueller bleibt stehen
     function navigateTo(direction) {
         if (busy) return;
         busy = true;
         clearTimeout(autoplayTimer);
 
-        const exitDir  = direction === 'next' ? '100%' : '-100%';
-        const enterDir = direction === 'next' ? '-100%' : '100%';
+        const enterDir = direction === 'next' ? '100%' : '-100%';
 
-        // Phase 1: aktueller Slide fährt vollständig heraus
-        sliderEl.style.transition = 'transform ' + transitionSpeed + 'ms ease-in';
-        sliderEl.style.transform  = 'translateX(' + exitDir + ')';
+        // Sofort zum nächsten Slide wechseln, außerhalb des sichtbaren Bereichs
+        direction === 'next' ? swiper.slideNext(0) : swiper.slidePrev(0);
 
-        setTimeout(function() {
-            // Snap zu nächstem Slide (unsichtbar, Slider außerhalb des Clip-Bereichs)
-            direction === 'next' ? swiper.slideNext(0) : swiper.slidePrev(0);
+        sliderEl.style.transition = 'none';
+        sliderEl.style.transform  = 'translateX(' + enterDir + ')';
 
-            sliderEl.style.transition = 'none';
-            sliderEl.style.transform  = 'translateX(' + enterDir + ')';
-
+        requestAnimationFrame(function() {
             requestAnimationFrame(function() {
-                requestAnimationFrame(function() {
-                    // Phase 2: neuer Slide fährt herein
-                    sliderEl.style.transition = 'transform ' + transitionSpeed + 'ms ease-out';
-                    sliderEl.style.transform  = 'translateX(0)';
+                // Neuer Slide fährt herein
+                sliderEl.style.transition = 'transform ' + transitionSpeed + 'ms ease-out';
+                sliderEl.style.transform  = 'translateX(0)';
 
-                    setTimeout(function() {
-                        sliderEl.style.transition = '';
-                        sliderEl.style.transform  = '';
-                        busy = false;
-                        scheduleNext();
-                    }, transitionSpeed + 20);
-                });
+                setTimeout(function() {
+                    sliderEl.style.transition = '';
+                    sliderEl.style.transform  = '';
+                    busy = false;
+                    scheduleNext();
+                }, transitionSpeed + 20);
             });
-        }, transitionSpeed + 20);
+        });
     }
 
     function scheduleNext() {
