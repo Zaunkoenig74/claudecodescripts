@@ -48,7 +48,6 @@
     justify-content: flex-end;
     background-size: cover;
     background-position: center;
-    direction: ltr;
 }
 
 .slide-image {
@@ -493,7 +492,7 @@
 <div class="bca-slider-container">
 
     <div class="bca-slider-clip">
-    <div class="swiper bca-slider" dir="rtl">
+    <div class="swiper bca-slider">
         <div class="swiper-wrapper">
 
             <div class="swiper-slide" style="--slide-overlay-color: #E15632; --slide-overlay-opacity: 0.85; background-image: url('https://bca-businesscoachingakademie.de/wp-content/uploads/2026/01/01_1000329-1-scaled.jpg'); background-position: center 30%;">
@@ -580,9 +579,9 @@ let autoplayTimer = null;
 
 const swiper = new Swiper('.bca-slider', {
     loop: true,
-    speed: transitionSpeed,
+    speed: 0,
     autoplay: false,
-    allowTouchMove: true,
+    allowTouchMove: false,
     navigation: false,
     pagination: {
         el: '.bca-slider-container .swiper-pagination',
@@ -590,24 +589,48 @@ const swiper = new Swiper('.bca-slider', {
     },
 });
 
-function navigateTo(direction) {
-    if (swiper.animating) return;
+// direction: 'next'|'prev' — welcher Slide gezeigt wird
+// fromLeft: true = neuer Slide kommt von links, false = von rechts
+function navigateTo(direction, fromLeft) {
+    if (busy) return;
+    busy = true;
     clearTimeout(autoplayTimer);
-    direction === 'next' ? swiper.slideNext() : swiper.slidePrev();
-    scheduleNext();
+
+    const enterFrom = fromLeft ? '-100%' : '100%';
+
+    direction === 'next' ? swiper.slideNext(0) : swiper.slidePrev(0);
+
+    sliderEl.style.transition = 'none';
+    sliderEl.style.transform  = 'translateX(' + enterFrom + ')';
+
+    requestAnimationFrame(function() {
+        requestAnimationFrame(function() {
+            sliderEl.style.transition = 'transform ' + transitionSpeed + 'ms ease-out';
+            sliderEl.style.transform  = 'translateX(0)';
+
+            setTimeout(function() {
+                sliderEl.style.transition = '';
+                sliderEl.style.transform  = '';
+                busy = false;
+                scheduleNext();
+            }, transitionSpeed + 20);
+        });
+    });
 }
 
 function scheduleNext() {
     clearTimeout(autoplayTimer);
     if (!paused) {
-        autoplayTimer = setTimeout(function() { navigateTo('next'); }, slideDelay);
+        autoplayTimer = setTimeout(function() { navigateTo('next', true); }, slideDelay);
     }
 }
 
+// Linker Pfeil: vorheriger Slide, kommt von links
 document.querySelector('.bca-slider-container .swiper-button-prev')
-    .addEventListener('click', function() { navigateTo('prev'); });
+    .addEventListener('click', function() { navigateTo('prev', true); });
+// Rechter Pfeil: nächster Slide, kommt von rechts
 document.querySelector('.bca-slider-container .swiper-button-next')
-    .addEventListener('click', function() { navigateTo('next'); });
+    .addEventListener('click', function() { navigateTo('next', false); });
 
 sliderEl.addEventListener('mouseenter', function() { paused = true;  clearTimeout(autoplayTimer); });
 sliderEl.addEventListener('mouseleave', function() { paused = false; scheduleNext(); });
