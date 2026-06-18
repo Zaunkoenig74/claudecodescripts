@@ -569,96 +569,49 @@
 // ========================================
 // KONFIGURATION - Laufgeschwindigkeit
 // ========================================
-const SLIDER_CONFIG = {
-    // Übergangsanimation (wie schnell ein Slide ein- bzw. ausfährt)
-    desktopTransitionSpeed: 800,   // ms
-    mobileTransitionSpeed:  600,   // ms
-
-    // Anzeigedauer pro Slide (Pause zwischen den Übergängen)
-    desktopDelay: 6500,            // ms (5 Sekunden)
-    mobileDelay:  4000,            // ms (4 Sekunden)
-
-    // Initiale Pause beim Laden
-    initialDelay: 0
-};
-
-// ========================================
-// INITIALISIERUNG
-// ========================================
 const isMobile = window.innerWidth <= 768;
-const transitionSpeed = isMobile ? SLIDER_CONFIG.mobileTransitionSpeed : SLIDER_CONFIG.desktopTransitionSpeed;
-const slideDelay      = isMobile ? SLIDER_CONFIG.mobileDelay           : SLIDER_CONFIG.desktopDelay;
+const transitionSpeed = isMobile ? 600 : 800;   // ms Übergangsanimation
+const slideDelay      = isMobile ? 4000 : 6500; // ms Anzeigedauer pro Slide
 
-setTimeout(function() {
-    const sliderEl = document.querySelector('.bca-slider');
-    let busy   = false;
-    let paused = false;
-    let autoplayTimer = null;
+const sliderEl = document.querySelector('.bca-slider');
+let paused = false;
+let autoplayTimer = null;
 
-    // Swiper nur für Pagination/Index-Verwaltung – Animation komplett manuell
-    const swiper = new Swiper('.bca-slider', {
-        loop: true,
-        speed: 0,
-        autoplay: false,
-        allowTouchMove: false,
-        navigation: false,
-        pagination: {
-            el: '.bca-slider-container .swiper-pagination',
-            clickable: false,
-        },
-    });
+const swiper = new Swiper('.bca-slider', {
+    loop: true,
+    speed: transitionSpeed,
+    autoplay: false,
+    allowTouchMove: true,
+    navigation: false,
+    pagination: {
+        el: '.bca-slider-container .swiper-pagination',
+        clickable: false,
+    },
+});
 
-    // Slide-Übergang: neuer Slide fährt herein, aktueller bleibt stehen
-    function navigateTo(direction) {
-        if (busy) return;
-        busy = true;
-        clearTimeout(autoplayTimer);
-
-        const enterDir = direction === 'next' ? '100%' : '-100%';
-
-        // Sofort zum nächsten Slide wechseln, außerhalb des sichtbaren Bereichs
-        direction === 'next' ? swiper.slideNext(0) : swiper.slidePrev(0);
-
-        sliderEl.style.transition = 'none';
-        sliderEl.style.transform  = 'translateX(' + enterDir + ')';
-
-        requestAnimationFrame(function() {
-            requestAnimationFrame(function() {
-                // Neuer Slide fährt herein
-                sliderEl.style.transition = 'transform ' + transitionSpeed + 'ms ease-out';
-                sliderEl.style.transform  = 'translateX(0)';
-
-                setTimeout(function() {
-                    sliderEl.style.transition = '';
-                    sliderEl.style.transform  = '';
-                    busy = false;
-                    scheduleNext();
-                }, transitionSpeed + 20);
-            });
-        });
-    }
-
-    function scheduleNext() {
-        clearTimeout(autoplayTimer);
-        if (!paused) {
-            autoplayTimer = setTimeout(function() { navigateTo('next'); }, slideDelay);
-        }
-    }
-
-    // Navigations-Buttons manuell verdrahten
-    document.querySelector('.bca-slider-container .swiper-button-prev')
-        .addEventListener('click', function() { navigateTo('prev'); });
-    document.querySelector('.bca-slider-container .swiper-button-next')
-        .addEventListener('click', function() { navigateTo('next'); });
-
-    // Autoplay pausieren beim Hovern
-    sliderEl.addEventListener('mouseenter', function() { paused = true;  clearTimeout(autoplayTimer); });
-    sliderEl.addEventListener('mouseleave', function() { paused = false; scheduleNext(); });
-
-    // Erster Slide sofort anzeigen
+function navigateTo(direction) {
+    if (swiper.animating) return;
+    clearTimeout(autoplayTimer);
+    direction === 'next' ? swiper.slideNext() : swiper.slidePrev();
     scheduleNext();
+}
 
-}, SLIDER_CONFIG.initialDelay);
+function scheduleNext() {
+    clearTimeout(autoplayTimer);
+    if (!paused) {
+        autoplayTimer = setTimeout(function() { navigateTo('next'); }, slideDelay);
+    }
+}
+
+document.querySelector('.bca-slider-container .swiper-button-prev')
+    .addEventListener('click', function() { navigateTo('prev'); });
+document.querySelector('.bca-slider-container .swiper-button-next')
+    .addEventListener('click', function() { navigateTo('next'); });
+
+sliderEl.addEventListener('mouseenter', function() { paused = true;  clearTimeout(autoplayTimer); });
+sliderEl.addEventListener('mouseleave', function() { paused = false; scheduleNext(); });
+
+scheduleNext();
 </script>
 
 </body>
