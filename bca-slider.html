@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BCA Slider - Full Width mit Overlay</title>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+
+<style>
+/* ========================================
+   SLIDER CONTAINER - FULL WIDTH
+   ======================================== */
+.bca-slider-container {
+    position: relative;
+    width: 100%;
+    margin: 40px 0 60px 0;
+    padding: 0;
+    overflow: visible;
+}
+
+/* ========================================
+   CLIP-WRAPPER (verhindert sichtbares Überlaufen beim Einfahren)
+   ======================================== */
+.bca-slider-clip {
+    width: 100%;
+    overflow: hidden;
+}
+
+/* ========================================
+   SLIDER
+   ======================================== */
+.bca-slider {
+    position: relative;
+    width: 100%;
+    height: 650px;
+    border-radius: 0;
+    overflow: hidden;
+    opacity: 0;
+}
+
+/* ========================================
+   SLIDES - FULL WIDTH FOTO MIT OVERLAY (DESKTOP)
+   ======================================== */
+.swiper-slide {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    background-size: cover;
+    background-position: center;
+}
+
+.slide-image {
+    display: none;
+}
+
+.bca-slider .swiper-slide::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 33.333%;
+    height: 100%;
+    background-color: var(--slide-overlay-color, #2E5AAC);
+    opacity: var(--slide-overlay-opacity, 0.85);
+    z-index: 2;
+}
+
+/* ========================================
+   SLIDE CONTENT
+   ======================================== */
+.slide-content {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 3;
+    width: 33.333%;
+    padding: 0 60px;
+    box-sizing: border-box;
+    color: white;
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.slide-content h1 {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: clamp(2rem, 3.5vw, 3.5rem);
+    line-height: 1.2;
+    font-weight: 300;
+    margin-bottom: 30px;
+    color: white;
+    text-shadow: none;
+}
+
+.slide-content p {
+    font-size: clamp(0.9rem, 1.1vw, 1.1rem);
+    line-height: 1.7;
+    margin-bottom: 35px;
+    color: white;
+    opacity: 0.95;
+    text-shadow: none;
+}
+
+.slide-content .btn {
+    display: inline-block;
+    padding: 15px 35px;
+    background: #b89434;
+    color: white;
+    text-decoration: none;
+    text-transform: uppercase;
+    font-size: 0.9rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    border-radius: 2px;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+    align-self: flex-start;
+
+}
+
+.slide-content .btn:hover {
+    background: #b39566;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(200, 168, 120, 0.4);
+
+
+
+
+}
+
+/* ========================================
+   NAVIGATION PFEILE - DEZENT
+   (außerhalb des .swiper, relativ zum Container)
+   ======================================== */
+.bca-slider-container .swiper-button-prev,
+.bca-slider-container .swiper-button-next {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 50;
+    width: 46px;
+    height: 46px;
+    margin-top: 0;
+    background: rgba(255, 255, 255, 0.18);
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    border-radius: 50%;
+    transition: background 0.3s ease, border-color 0.3s ease;
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
+    cursor: pointer;
+}
+
+.bca-slider-container .swiper-button-prev {
+    left: 20px;
+}
+
+.bca-slider-container .swiper-button-next {
+    right: 20px;
+}
+
+.bca-slider-container .swiper-button-prev:hover,
+.bca-slider-container .swiper-button-next:hover {
+    background: rgba(255, 255, 255, 0.32);
+    border-color: rgba(255, 255, 255, 0.6);
+}
+
+.bca-slider-container .swiper-button-prev::after,
+.bca-slider-container .swiper-button-next::after {
+    font-size: 15px;
+    font-weight: 700;
+    color: white;
+}
+
+/* ========================================
+   PAGINATION DOTS - UNTEN MITTIG
+   (außerhalb des .swiper, relativ zum Container)
+   ======================================== */
+.bca-slider-container .swiper-pagination {
+    position: absolute;
+    bottom: 18px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 50;
+    width: auto;
+}
+
+.bca-slider-container .swiper-pagination-bullet {
+    width: 10px;
+    height: 10px;
+    background: white;
+    opacity: 0.45;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    display: inline-block;
+    border-radius: 50%;
+    margin: 0 4px;
+    cursor: pointer;
+}
+
+.bca-slider-container .swiper-pagination-bullet-active {
+    opacity: 1;
+    background: #b89434;
+    transform: scale(1.25);
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.8);
+}
+
+/* ========================================
+   KREIS OVERLAY
+   ======================================== */
+.bca-circle-overlay {
+    position: absolute;
+    right: 100px;
+    bottom: -100px;
+    z-index: 100;
+    width: 200px;
+    height: 200px;
+    pointer-events: none;
+}
+
+.bca-circle-overlay img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+/* ========================================
+   NEWSLETTER TAB
+   ======================================== */
+.newsletter-tab {
+    position: absolute;
+    left: 100px;
+    top: 100%;
+    z-index: 200;
+    background: #2a52bc;
+    color: white;
+    padding: 12px 35px;
+    border-radius: 0 0 8px 8px;
+    text-decoration: none;
+    display: inline-block;
+    box-shadow: 0 4px 15px rgba(43, 83, 188, 0.3);
+    transition: all 0.3s ease;
+    font-family: "Montserrat", sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+.newsletter-tab:hover {
+    background: #1e3d7a;
+    box-shadow: 0 6px 20px rgba(43, 83, 188, 0.4);
+    color: white;
+}
+
+.newsletter-tab:visited,
+.newsletter-tab:active,
+.newsletter-tab:focus {
+    color: white;
+}
+
+/* ========================================
+   RESPONSIVE
+   ======================================== */
+
+@media (max-width: 1400px) {
+    .slide-content h1 {
+        font-size: clamp(2rem, 3vw, 3rem);
+    }
+}
+
+@media (max-width: 1200px) {
+    .slide-content {
+        padding: 0 50px;
+    }
+
+    .slide-content h1 {
+        font-size: clamp(1.8rem, 2.8vw, 2.8rem);
+    }
+
+    .slide-content p {
+        font-size: clamp(0.85rem, 1vw, 1rem);
+    }
+}
+
+@media (max-width: 1024px) {
+    .bca-slider-container {
+        margin-bottom: 60px;
+    }
+
+    .swiper-slide::after {
+        width: 40%;
+    }
+
+    .slide-content {
+        width: 40%;
+        padding: 0 40px;
+    }
+
+    .slide-content h1 {
+        font-size: clamp(1.6rem, 2.5vw, 2.5rem);
+        margin-bottom: 20px;
+    }
+
+    .slide-content p {
+        font-size: clamp(0.85rem, 1vw, 1rem);
+        margin-bottom: 25px;
+    }
+
+    .bca-circle-overlay {
+        width: 180px;
+        height: 180px;
+        bottom: -90px;
+    }
+
+    .newsletter-tab {
+        left: 60px;
+        top: 100%;
+        padding: 10px 30px;
+        font-size: 0.95rem;
+    }
+}
+
+@media (max-width: 900px) {
+    .swiper-slide::after {
+        width: 45%;
+    }
+
+    .slide-content {
+        width: 45%;
+        padding: 0 35px;
+    }
+
+    .slide-content h1 {
+        font-size: clamp(1.4rem, 2.2vw, 2.2rem);
+    }
+
+    .slide-content p {
+        font-size: 0.9rem;
+        line-height: 1.5;
+    }
+
+    .slide-content .btn {
+        padding: 12px 28px;
+        font-size: 0.85rem;
+    }
+}
+
+/* Mobile - KOMPLETT NEUES LAYOUT */
+@media (max-width: 768px) {
+    .bca-slider-container {
+        margin: 40px 0 55px 0;
+    }
+
+    .bca-slider-container .swiper-pagination {
+        bottom: 13px;
+    }
+
+    .bca-slider {
+        height: 500px;
+    }
+
+    .swiper-slide {
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: stretch;
+        background-image: none !important;
+    }
+
+    .swiper-slide::before,
+    .swiper-slide::after {
+        display: none;
+    }
+
+    .slide-image {
+        display: block;
+        width: 100%;
+        height: 50%;
+        background-size: cover;
+        background-position: center;
+        flex-shrink: 0;
+    }
+
+    .slide-content {
+        position: relative;
+        transform: none;
+        top: auto;
+        right: auto;
+        width: 100%;
+        height: 50%;
+        max-width: 100%;
+        margin: 0;
+        padding: 30px;
+        background: var(--slide-overlay-color, #2E5AAC);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        box-sizing: border-box;
+    }
+
+    .slide-content h1 {
+        font-size: 2rem;
+        margin-bottom: 15px;
+    }
+
+    .slide-content p {
+        font-size: 1rem;
+        line-height: 1.5;
+        margin-bottom: 20px;
+    }
+
+    .slide-content .btn {
+        padding: 12px 25px;
+        font-size: 0.85rem;
+        align-self: flex-start;
+        white-space: nowrap;
+    }
+
+    /* Pfeile auf Mobile kleiner */
+    .bca-slider-container .swiper-button-prev,
+    .bca-slider-container .swiper-button-next {
+        width: 36px;
+        height: 36px;
+        top: 25%;
+    }
+
+    .bca-slider-container .swiper-button-prev::after,
+    .bca-slider-container .swiper-button-next::after {
+        font-size: 12px;
+    }
+
+    .bca-circle-overlay {
+        width: 150px;
+        height: 150px;
+        right: 20px;
+        bottom: -70px;
+    }
+
+    .newsletter-tab {
+        left: 20px;
+        top: 100%;
+        padding: 10px 25px;
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .bca-slider-container {
+        margin: 40px 0 50px 0;
+    }
+
+    .bca-slider {
+        height: 450px;
+    }
+
+    .slide-content {
+        padding: 25px 20px;
+    }
+
+    .slide-content h1 {
+        font-size: 1.8rem;
+    }
+
+    .slide-content p {
+        font-size: 0.95rem;
+    }
+
+    .slide-content .btn {
+        padding: 10px 20px;
+        font-size: 0.8rem;
+    }
+
+    .bca-circle-overlay {
+        width: 120px;
+        height: 120px;
+        right: 10px;
+        bottom: -55px;
+    }
+
+    .newsletter-tab {
+        left: 15px;
+        top: 100%;
+        padding: 8px 20px;
+        font-size: 0.85rem;
+    }
+}
+</style>
+</head>
+<body>
+
+<div class="bca-slider-container">
+
+    <div class="bca-slider-clip">
+    <div class="swiper bca-slider">
+        <div class="swiper-wrapper">
+
+            <div class="swiper-slide" style="--slide-overlay-color: #E15632; --slide-overlay-opacity: 0.85; background-image: url('https://bca-businesscoachingakademie.de/wp-content/uploads/2026/01/01_1000329-1-scaled.jpg'); background-position: center 30%;">
+                <div class="slide-image" style="background-image: url('https://bca-businesscoachingakademie.de/wp-content/uploads/2026/01/01_1000329-scaled.jpg');"></div>
+                <div class="slide-content">
+                    <h1>Make Change Happen.</h1>
+                    <p>Veränderung beginnt genau hier.</p>
+                    <a href="https://bca-businesscoachingakademie.de/kontakt/" class="btn">Jetzt Kontakt aufnehmen</a>
+                </div>
+            </div>
+
+            <div class="swiper-slide" style="--slide-overlay-color: #2a52bc; --slide-overlay-opacity: 0.85; background-image: url('https://bca-businesscoachingakademie.de/wp-content/uploads/2025/11/01_1000290-scaled.jpg'); background-position: center 30%;">
+                <div class="slide-image" style="background-image: url('https://bca-businesscoachingakademie.de/wp-content/uploads/2025/11/01_1000290-scaled.jpg');"></div>
+                <div class="slide-content">
+                    <h1>Coachings</h1>
+                    <p>Individuelles Coaching mit Klarheit, Tiefe und professioneller Begleitung.</p>
+                    <a href="https://bca-businesscoachingakademie.de/coachings/" class="btn">Jetzt informieren</a>
+                </div>
+            </div>
+
+            <div class="swiper-slide" style="--slide-overlay-color: #E15632; --slide-overlay-opacity: 0.85; background-image: url('https://bca-businesscoachingakademie.de/wp-content/uploads/2025/11/02_1000532-scaled.jpg');">
+                <div class="slide-image" style="background-image: url('https://bca-businesscoachingakademie.de/wp-content/uploads/2025/11/02_1000532-scaled.jpg');"></div>
+                <div class="slide-content">
+                    <h1>Team & Transformation</h1>
+                    <p>Wir gestalten Veränderung – strukturiert, klar und mit Haltung.</p>
+                    <a href="https://bca-businesscoachingakademie.de/team-transformation/" class="btn">Mehr erfahren</a>
+                </div>
+            </div>
+
+            <div class="swiper-slide" style="--slide-overlay-color: #2a52bc; --slide-overlay-opacity: 0.85; background-image: url('https://bca-businesscoachingakademie.de/wp-content/uploads/2025/11/02_9441-scaled.jpg'); background-position: center 20%;">
+                <div class="slide-image" style="background-image: url('https://bca-businesscoachingakademie.de/wp-content/uploads/2025/11/02_9441-scaled.jpg');"></div>
+                <div class="slide-content">
+                    <h1>Impulse & Workshops</h1>
+                    <p>Keynotes, Trainings & inspirierende Formate, die bewegen.</p>
+                    <a href="https://bca-businesscoachingakademie.de/workshops/" class="btn">Zum Programm</a>
+                </div>
+            </div>
+
+            <div class="swiper-slide" style="--slide-overlay-color: #2a52bc; --slide-overlay-opacity: 0.85; background-image: url('https://bca-businesscoachingakademie.de/wp-content/uploads/2025/11/02_9425-scaled.jpg'); background-position: center 20%;">
+                <div class="slide-image" style="background-image: url('https://bca-businesscoachingakademie.de/wp-content/uploads/2025/11/02_9425-scaled.jpg');"></div>
+                <div class="slide-content">
+                    <h1>Ausbildung & Entwicklung</h1>
+                    <p>Von „Der kleine Coach" bis zur IHK-zertifizierten Business Coaching Ausbildung.</p>
+                    <a href="https://bca-businesscoachingakademie.de/akademie/" class="btn">Zum Programm</a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    </div><!-- /.bca-slider-clip -->
+
+    <!-- Pagination Dots (außerhalb swiper → sofort sichtbar) -->
+    <div class="swiper-pagination"></div>
+
+    <!-- Navigation Pfeile (außerhalb swiper → sofort sichtbar) -->
+    <div class="swiper-button-prev"></div>
+    <div class="swiper-button-next"></div>
+
+    <!-- KREIS OVERLAY -->
+    <div class="bca-circle-overlay">
+        <img src="https://bca-businesscoachingakademie.de/wp-content/uploads/2025/11/icon.png" alt="Make Change happen!">
+    </div>
+
+    <!-- NEWSLETTER TAB -->
+    <a href="https://mailchi.mp/a1dd591170fc/newsletter-bca-hamburg" class="newsletter-tab" target="_blank">
+        Newsletter
+    </a>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
+<script>
+// ========================================
+// KONFIGURATION - Laufgeschwindigkeit
+// ========================================
+const SLIDER_CONFIG = {
+    // Übergangsanimation (wie schnell ein Slide ein- bzw. ausfährt)
+    desktopTransitionSpeed: 800,   // ms
+    mobileTransitionSpeed:  600,   // ms
+
+    // Anzeigedauer pro Slide (Pause zwischen den Übergängen)
+    desktopDelay: 6500,            // ms (5 Sekunden)
+    mobileDelay:  4000,            // ms (4 Sekunden)
+
+    // Initiale Pause beim Laden (zeigt Hintergrundbild)
+    initialDelay: 3000             // ms (3 Sekunden)
+};
+
+// ========================================
+// INITIALISIERUNG
+// ========================================
+const isMobile = window.innerWidth <= 768;
+const transitionSpeed = isMobile ? SLIDER_CONFIG.mobileTransitionSpeed : SLIDER_CONFIG.desktopTransitionSpeed;
+const slideDelay      = isMobile ? SLIDER_CONFIG.mobileDelay           : SLIDER_CONFIG.desktopDelay;
+
+setTimeout(function() {
+    const sliderEl = document.querySelector('.bca-slider');
+    let busy   = false;
+    let paused = false;
+    let autoplayTimer = null;
+
+    // Swiper nur für Pagination/Index-Verwaltung – Animation komplett manuell
+    const swiper = new Swiper('.bca-slider', {
+        loop: true,
+        speed: 0,
+        autoplay: false,
+        allowTouchMove: false,
+        navigation: false,
+        pagination: {
+            el: '.bca-slider-container .swiper-pagination',
+            clickable: false,
+        },
+    });
+
+    // Slide-Übergang: Phase 1 Exit vollständig → Snap → Phase 2 Enter
+    function navigateTo(direction) {
+        if (busy) return;
+        busy = true;
+        clearTimeout(autoplayTimer);
+
+        const exitDir  = direction === 'next' ? '100%' : '-100%';
+        const enterDir = direction === 'next' ? '-100%' : '100%';
+
+        // Phase 1: aktueller Slide fährt vollständig heraus
+        sliderEl.style.transition = 'transform ' + transitionSpeed + 'ms ease-in';
+        sliderEl.style.transform  = 'translateX(' + exitDir + ')';
+
+        setTimeout(function() {
+            // Snap zu nächstem Slide (unsichtbar, Slider außerhalb des Clip-Bereichs)
+            direction === 'next' ? swiper.slideNext(0) : swiper.slidePrev(0);
+
+            sliderEl.style.transition = 'none';
+            sliderEl.style.transform  = 'translateX(' + enterDir + ')';
+
+            requestAnimationFrame(function() {
+                requestAnimationFrame(function() {
+                    // Phase 2: neuer Slide fährt herein
+                    sliderEl.style.transition = 'transform ' + transitionSpeed + 'ms ease-out';
+                    sliderEl.style.transform  = 'translateX(0)';
+
+                    setTimeout(function() {
+                        sliderEl.style.transition = '';
+                        sliderEl.style.transform  = '';
+                        busy = false;
+                        scheduleNext();
+                    }, transitionSpeed + 20);
+                });
+            });
+        }, transitionSpeed + 20);
+    }
+
+    function scheduleNext() {
+        clearTimeout(autoplayTimer);
+        if (!paused) {
+            autoplayTimer = setTimeout(function() { navigateTo('next'); }, slideDelay);
+        }
+    }
+
+    // Navigations-Buttons manuell verdrahten
+    document.querySelector('.bca-slider-container .swiper-button-prev')
+        .addEventListener('click', function() { navigateTo('prev'); });
+    document.querySelector('.bca-slider-container .swiper-button-next')
+        .addEventListener('click', function() { navigateTo('next'); });
+
+    // Autoplay pausieren beim Hovern
+    sliderEl.addEventListener('mouseenter', function() { paused = true;  clearTimeout(autoplayTimer); });
+    sliderEl.addEventListener('mouseleave', function() { paused = false; scheduleNext(); });
+
+    // Erster Slide: von links einfahren
+    sliderEl.style.transition = 'none';
+    sliderEl.style.transform  = 'translateX(-100%)';
+    sliderEl.style.opacity    = '1';
+
+    requestAnimationFrame(function() {
+        requestAnimationFrame(function() {
+            sliderEl.style.transition = 'transform ' + transitionSpeed + 'ms ease-out';
+            sliderEl.style.transform  = 'translateX(0)';
+
+            setTimeout(function() {
+                sliderEl.style.transition = '';
+                sliderEl.style.transform  = '';
+                scheduleNext();
+            }, transitionSpeed + 50);
+        });
+    });
+
+}, SLIDER_CONFIG.initialDelay);
+</script>
+
+</body>
+</html>
