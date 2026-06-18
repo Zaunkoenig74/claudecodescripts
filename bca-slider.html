@@ -23,6 +23,7 @@
    CLIP-WRAPPER (verhindert sichtbares Überlaufen beim Einfahren)
    ======================================== */
 .bca-slider-clip {
+    position: relative;
     width: 100%;
     overflow: hidden;
 }
@@ -590,6 +591,8 @@ const swiper = new Swiper('.bca-slider', {
     },
 });
 
+const clipEl = document.querySelector('.bca-slider-clip');
+
 // direction: 'next'|'prev' — welcher Slide gezeigt wird
 // fromLeft: true = neuer Slide kommt von links, false = von rechts
 function navigateTo(direction, fromLeft) {
@@ -598,20 +601,44 @@ function navigateTo(direction, fromLeft) {
     clearTimeout(autoplayTimer);
 
     const enterFrom = fromLeft ? '-100%' : '100%';
+    const exitTo    = fromLeft ? '100%'  : '-100%';
 
+    // Klone aktuellen Slide als sichtbare Deckschicht im Clip
+    const currentSlide = swiper.slides[swiper.activeIndex];
+    const clone = currentSlide.cloneNode(true);
+    Object.assign(clone.style, {
+        position:      'absolute',
+        top:           '0',
+        left:          '0',
+        width:         '100%',
+        height:        sliderEl.offsetHeight + 'px',
+        zIndex:        '5',
+        pointerEvents: 'none',
+        transition:    'none',
+        transform:     'translateX(0)',
+    });
+    clipEl.appendChild(clone);
+
+    // Swiper sofort auf nächsten Slide schalten
     direction === 'next' ? swiper.slideNext(0) : swiper.slidePrev(0);
 
+    // Neuen Slide (= sliderEl jetzt) außerhalb positionieren
     sliderEl.style.transition = 'none';
     sliderEl.style.transform  = 'translateX(' + enterFrom + ')';
 
     requestAnimationFrame(function() {
         requestAnimationFrame(function() {
-            sliderEl.style.transition = 'transform ' + transitionSpeed + 'ms ease-out';
+            var ease = 'transform ' + transitionSpeed + 'ms ease-out';
+            // Beide gleichzeitig animieren: neues Slide rein, alter Clone raus
+            sliderEl.style.transition = ease;
             sliderEl.style.transform  = 'translateX(0)';
+            clone.style.transition    = ease;
+            clone.style.transform     = 'translateX(' + exitTo + ')';
 
             setTimeout(function() {
                 sliderEl.style.transition = '';
                 sliderEl.style.transform  = '';
+                clipEl.removeChild(clone);
                 busy = false;
                 scheduleNext();
             }, transitionSpeed + 20);
