@@ -653,12 +653,10 @@ function scheduleNext() {
     }
 }
 
-// Linker Pfeil: vorheriger Slide, kommt von links
 document.querySelector('.bca-slider-container .swiper-button-prev')
-    .addEventListener('click', function() { navigateTo('prev', true); });
-// Rechter Pfeil: nächster Slide, kommt von rechts
+    .addEventListener('click', function() { navigateTo('prev', false); });
 document.querySelector('.bca-slider-container .swiper-button-next')
-    .addEventListener('click', function() { navigateTo('next', false); });
+    .addEventListener('click', function() { navigateTo('next', true); });
 
 sliderEl.addEventListener('mouseenter', function() { paused = true;  clearTimeout(autoplayTimer); });
 sliderEl.addEventListener('mouseleave', function() { paused = false; scheduleNext(); });
