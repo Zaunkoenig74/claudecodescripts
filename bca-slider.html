@@ -36,7 +36,6 @@
     height: 650px;
     border-radius: 0;
     overflow: hidden;
-    opacity: 0;
 }
 
 /* ========================================
@@ -663,23 +662,8 @@ setTimeout(function() {
     sliderEl.addEventListener('mouseenter', function() { paused = true;  clearTimeout(autoplayTimer); });
     sliderEl.addEventListener('mouseleave', function() { paused = false; scheduleNext(); });
 
-    // Erster Slide: von links einfahren
-    sliderEl.style.transition = 'none';
-    sliderEl.style.transform  = 'translateX(-100%)';
-    sliderEl.style.opacity    = '1';
-
-    requestAnimationFrame(function() {
-        requestAnimationFrame(function() {
-            sliderEl.style.transition = 'transform ' + transitionSpeed + 'ms ease-out';
-            sliderEl.style.transform  = 'translateX(0)';
-
-            setTimeout(function() {
-                sliderEl.style.transition = '';
-                sliderEl.style.transform  = '';
-                scheduleNext();
-            }, transitionSpeed + 50);
-        });
-    });
+    // Erster Slide sofort anzeigen
+    scheduleNext();
 
 }, SLIDER_CONFIG.initialDelay);
 </script>
