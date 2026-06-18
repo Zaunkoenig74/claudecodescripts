@@ -574,6 +574,7 @@ const transitionSpeed = isMobile ? 600 : 800;   // ms Übergangsanimation
 const slideDelay      = isMobile ? 4000 : 6500; // ms Anzeigedauer pro Slide
 
 const sliderEl = document.querySelector('.bca-slider');
+let busy   = false;
 let paused = false;
 let autoplayTimer = null;
 
